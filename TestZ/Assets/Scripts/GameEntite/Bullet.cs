@@ -5,27 +5,30 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {    
     private Rigidbody Rb;
+
     private float MoveSpeed = 15f;
-    private bool MoveEnable = false;
-    private bool IncreaseEnable = false;
-    private float IncreaseSpeed = 2f;
+    private bool MoveEnable = false;   
+
     private bool DeathEnable = false;
     private float DeathTimer = 3f;
-    
+
+    private ChangeSize ChangeSize;
 
     private void Awake()
     {
         Rb = GetComponent<Rigidbody>();
+        ChangeSize = gameObject.AddComponent<ChangeSize>();
     }
     void Update()//машина состояний.
     {
-        Move();//надо вынести в отдельный класс. Одинаковое поведение у плейера.        
-        Increase();
+        Move();//надо вынести в отдельный класс. Одинаковое поведение у плейера.                
         Death();
+        OnNouse();
     }    
     public void MoveOn()
     {
         MoveEnable = true;
+        ChangeSize.ChangeSizeOff();
     }
     private void Move()
     {
@@ -40,23 +43,10 @@ public class Bullet : MonoBehaviour
         {  
             MoveEnable = false;           
             DeathOn();
-            IncreaseOn();                
+            ChangeSize.ChangeSizeOn();
             Destroy(col.gameObject);
         }
-    }
-    private void IncreaseOn()
-    {
-        IncreaseEnable = true;       
-    }
-    private void Increase()//одинаковое поведение с плейером Decrease
-    {
-        if(IncreaseEnable)
-        {           
-            Vector3 size = transform.localScale;
-            Vector3 newSize = new Vector3(size.x += IncreaseSpeed * Time.deltaTime, size.y += IncreaseSpeed * Time.deltaTime, size.z += IncreaseSpeed * Time.deltaTime);
-            transform.localScale = newSize;
-        }
-    }  
+    }   
     private void DeathOn()
     {
         DeathEnable = true;
@@ -70,6 +60,14 @@ public class Bullet : MonoBehaviour
             {
                 Destroy(this.gameObject);
             }
+        }
+    }   
+    private void OnNouse()//на носу) пуля висит на игроке, не выстрелили
+    {
+        if(transform.parent)
+        {
+            transform.localPosition = new Vector3(0.5f,0,0);
+            ChangeSize.ChangeSizeOn();
         }
     }
 }

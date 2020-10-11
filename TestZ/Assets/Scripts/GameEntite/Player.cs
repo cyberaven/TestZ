@@ -18,10 +18,10 @@ public class Player : MonoBehaviour
     private bool JumpEnable = true; 
     private float JumpForce = 5f;
     private float JumpFrequency = 2f; 
-    private float JumpDelta = 0; 
-        
-    private bool DecreaseEnable = false;
-    private float DecreaseSpeed = 0.5f;
+    private float JumpDelta = 0;         
+    
+    private ChangeSize ChangeSize;
+    private float ChangeSizeSpeed = -1f;
 
     public delegate void FinishTouchDel();
     public static event FinishTouchDel FinishTouchEvent;
@@ -32,7 +32,8 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         Rb = GetComponent<Rigidbody>();  
-        SphereCollider = GetComponent<SphereCollider>();  
+        SphereCollider = GetComponent<SphereCollider>();
+        ChangeSize = gameObject.AddComponent<ChangeSize>();
     }
     private void OnEnable()
     {
@@ -48,8 +49,7 @@ public class Player : MonoBehaviour
     private void Update()//лучше работать с колайдерами и ригидбоди чере фиксапдейт, но не сегодня.
     {
         Move();//поведения следовало бы вынести в отдельные классы. 
-        Jump();//также при увеличении колва поведений, не лишнем будет машина состояний.
-        Decrease();
+        Jump();//также при увеличении колва поведений, не лишнем будет машина состояний.        
     }
 
     private void Move()
@@ -75,24 +75,15 @@ public class Player : MonoBehaviour
         }
     }
     private void DecreaseOn()
-    {        
-        DecreaseEnable = true;
-        CreateBullet();
-    }
-    private void Decrease()
     {
-        if(DecreaseEnable)
-        {           
-            Vector3 size = transform.localScale;
-            Vector3 newSize = new Vector3(size.x -= DecreaseSpeed * Time.deltaTime, size.y -= DecreaseSpeed * Time.deltaTime, size.z -= DecreaseSpeed * Time.deltaTime);
-            transform.localScale = newSize;
-        }
-    }
+        ChangeSize.ChangeSizeOn(ChangeSizeSpeed);        
+        CreateBullet();    }
+    
     private void Shoot()
     {
         Bullet.transform.SetParent(null);
         Bullet.MoveOn();
-        DecreaseEnable = false;               
+        ChangeSize.ChangeSizeOff();
     }
     
     private void OnCollisionEnter(Collision col)
@@ -109,7 +100,6 @@ public class Player : MonoBehaviour
     private void CreateBullet()
     {
         Bullet = Instantiate(BulletPrefab);
-        Bullet.transform.SetParent(transform); 
-        Bullet.transform.localPosition = new Vector3(transform.position.x + 1,transform.position.y, transform.position.z);
+        Bullet.transform.SetParent(transform);         
     }
 }

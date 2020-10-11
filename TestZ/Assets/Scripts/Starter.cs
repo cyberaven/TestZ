@@ -15,8 +15,9 @@ public class Starter : MonoBehaviour
     private List<Enemy> Enemys = new List<Enemy>();
     private int EnemyCount = 20;
     private Road Road;
+   
 
-    private Vector3 CameraStartPosition = new Vector3(-3.61f,7.03f,-4.92f);
+    private Vector3 CameraStartPosition = new Vector3(-1.92f, 3.23f, -0.06f);
 
    
     private void OnEnable()
@@ -34,8 +35,9 @@ public class Starter : MonoBehaviour
 
     private void StartGame()
     {
-        Camera.main.transform.position = CameraStartPosition;
-        CreateGameEntite();        
+        CreateGameEntite();
+        Camera.main.transform.SetParent(Player.transform);
+        Camera.main.transform.localPosition = CameraStartPosition;               
     }
     private void WinGame()
     {
@@ -51,24 +53,20 @@ public class Starter : MonoBehaviour
     private void CreateGameEntite() //каждому нужна фабрика и пул.
     {
         Player = Instantiate(PlayerPrefab).GetComponent<Player>();
-        Camera.main.transform.SetParent(Player.transform);
-
         Finish = Instantiate(FinishPrefab).GetComponent<Finish>();
-
         CreateEnemys(EnemyCount);        
-
         Road = Instantiate(RoadPrefab).GetComponent<Road>();
     }
     private void CreateEnemys(int count)
     {
         Enemys = new List<Enemy>();
 
-        float maxX = 30;//граница случайных координат. Взята на глаз.
-        float minX = 10;
+        float maxX = 60;//граница случайных координат. Взята на глаз.
+        float minX = 20;
         float maxY = 0.5f;
         float minY = 0;
-        float maxZ = 3;
-        float minZ = -3;
+        float maxZ = 2;
+        float minZ = -2;
 
         for (int i = 0; i < count; i++)
         {
@@ -90,7 +88,10 @@ public class Starter : MonoBehaviour
 
         foreach (Enemy enemy in Enemys)
         {
-            Destroy(enemy.gameObject);
+            if (enemy)//костыль/заплатка
+            {
+                Destroy(enemy.gameObject);
+            }
         }
     }
 

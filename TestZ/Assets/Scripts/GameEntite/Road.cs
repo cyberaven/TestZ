@@ -4,15 +4,33 @@ using UnityEngine;
 
 public class Road : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private ChangeSize ChangeSize;
+    private float ChangeSizeSpeed = -1f;
+
+    private void Awake()
     {
-        
+        ChangeSize = gameObject.AddComponent<ChangeSize>();        
+    }
+    private void OnEnable()
+    {
+        TapListener.PlayerTapDownEvent += Decrease;
+        TapListener.PlayerTapUpEvent += StopDecrease;
+    }
+    private void OnDisable()
+    {
+        TapListener.PlayerTapDownEvent -= Decrease;
+        TapListener.PlayerTapUpEvent -= StopDecrease;
     }
 
-    // Update is called once per frame
-    void Update()
+    //при уменьшении после 0 растет Y и выталкивает игрока
+    private void Decrease()
     {
-        
+        ChangeSize.ChangeSizeOn(ChangeSizeSpeed);
     }
+    private void StopDecrease()
+    {
+        ChangeSize.ChangeSizeOff();
+    }
+
+
 }
