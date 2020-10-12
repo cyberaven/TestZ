@@ -13,11 +13,13 @@ public class UI : MonoBehaviour
         StartButton.StartButtonClickEvent += GameStart;
         Player.FinishTouchEvent += WinGame;
         Player.EnemyTouchEvent += LoseGame;
+        Player.MinSizeEvent += LoseGame;
     }
     private void OnDisable()
     {
         StartButton.StartButtonClickEvent -= GameStart;
         Player.EnemyTouchEvent -= LoseGame;
+        Player.MinSizeEvent -= LoseGame;
     }
 
     private void GameStart()

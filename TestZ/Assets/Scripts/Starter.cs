@@ -14,10 +14,9 @@ public class Starter : MonoBehaviour
     private Finish Finish;
     private List<Enemy> Enemys = new List<Enemy>();
     private int EnemyCount = 20;
-    private Road Road;
-   
+    private Road Road;   
 
-    private Vector3 CameraStartPosition = new Vector3(-1.92f, 3.23f, -0.06f);
+    private Vector3 CameraStartPosition = new Vector3(-2.27f, 2.21f, -0.02f);
 
    
     private void OnEnable()
@@ -25,12 +24,14 @@ public class Starter : MonoBehaviour
         StartButton.StartButtonClickEvent += StartGame;
         Player.FinishTouchEvent += WinGame;
         Player.EnemyTouchEvent += LoseGame;
+        Player.MinSizeEvent += LoseGame;
     }
     private void OnDisable()
     {
         StartButton.StartButtonClickEvent -= StartGame;
         Player.FinishTouchEvent -= WinGame;
         Player.EnemyTouchEvent -= LoseGame;
+        Player.MinSizeEvent -= LoseGame;
     }
 
     private void StartGame()

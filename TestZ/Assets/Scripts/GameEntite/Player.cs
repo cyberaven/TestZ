@@ -22,12 +22,16 @@ public class Player : MonoBehaviour
     
     private ChangeSize ChangeSize;
     private float ChangeSizeSpeed = -1f;
+    private float MinSize = 0.2f;
 
     public delegate void FinishTouchDel();
     public static event FinishTouchDel FinishTouchEvent;
 
     public delegate void EnemyTouchDel();
-    public static event EnemyTouchDel EnemyTouchEvent;  
+    public static event EnemyTouchDel EnemyTouchEvent; 
+
+    public delegate void MinSizeDel();
+    public static event MinSizeDel MinSizeEvent; 
 
     private void Awake()
     {
@@ -49,7 +53,8 @@ public class Player : MonoBehaviour
     private void Update()//лучше работать с колайдерами и ригидбоди чере фиксапдейт, но не сегодня.
     {
         Move();//поведения следовало бы вынести в отдельные классы. 
-        Jump();//также при увеличении колва поведений, не лишнем будет машина состояний.        
+        Jump();//также при увеличении колва поведений, не лишнем будет машина состояний.  
+        CheckSize();      
     }
 
     private void Move()
@@ -77,7 +82,8 @@ public class Player : MonoBehaviour
     private void DecreaseOn()
     {
         ChangeSize.ChangeSizeOn(ChangeSizeSpeed);        
-        CreateBullet();    }
+        CreateBullet();    
+    }
     
     private void Shoot()
     {
@@ -94,12 +100,23 @@ public class Player : MonoBehaviour
         }
         if(col.gameObject.tag == "Enemy")
         {
-            EnemyTouchEvent?.Invoke();
+            Enemy enemy = col.gameObject.GetComponent<Enemy>();
+            if(!enemy.GetCursed())
+            {
+                EnemyTouchEvent?.Invoke();
+            }
         }
     }
     private void CreateBullet()
     {
         Bullet = Instantiate(BulletPrefab);
         Bullet.transform.SetParent(transform);         
+    }
+    private void CheckSize()
+    {        
+        if(transform.localScale.x < MinSize)
+        {
+            MinSizeEvent?.Invoke();
+        }
     }
 }

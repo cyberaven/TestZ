@@ -9,20 +9,18 @@ public class Bullet : MonoBehaviour
     private float MoveSpeed = 15f;
     private bool MoveEnable = false;   
 
-    private bool DeathEnable = false;
-    private float DeathTimer = 3f;
-
     private ChangeSize ChangeSize;
+    private DeathTimer DeathTimer;
 
     private void Awake()
     {
         Rb = GetComponent<Rigidbody>();
         ChangeSize = gameObject.AddComponent<ChangeSize>();
+        DeathTimer = gameObject.AddComponent<DeathTimer>();
     }
     void Update()//машина состояний.
     {
-        Move();//надо вынести в отдельный класс. Одинаковое поведение у плейера.                
-        Death();
+        Move();//надо вынести в отдельный класс. Одинаковое поведение у плейера.                        
         OnNouse();
     }    
     public void MoveOn()
@@ -41,27 +39,16 @@ public class Bullet : MonoBehaviour
     {
         if(col.gameObject.tag == "Enemy")
         {  
-            MoveEnable = false;           
-            DeathOn();
-            ChangeSize.ChangeSizeOn();
-            Destroy(col.gameObject);
-        }
-    }   
-    private void DeathOn()
-    {
-        DeathEnable = true;
-    }
-    private void Death()
-    {
-        if(DeathEnable)
-        {
-            DeathTimer -= Time.deltaTime;
-            if(DeathTimer < 0)
+            Enemy enemy = col.GetComponent<Enemy>();
+            if(!enemy.GetCursed())
             {
-                Destroy(this.gameObject);
-            }
+                MoveEnable = false;           
+                DeathTimer.DeathOn();
+                ChangeSize.ChangeSizeOn();           
+                enemy.CursedOn();         
+            }   
         }
-    }   
+    }  
     private void OnNouse()//на носу) пуля висит на игроке, не выстрелили
     {
         if(transform.parent)
